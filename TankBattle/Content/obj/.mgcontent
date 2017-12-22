@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Profile>Reach</Profile>
+  <Platform>Windows</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/Andy20.spritefont</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/Andy40.spritefont</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/TileTexture.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/TankTexture.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/Turret Texture.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/BulletTexture.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/CastleTurretTexture.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/CastleTurretBaseTexture.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/Dot.png</File>
+    <File>C:/Users/Stephen/Documents/Visual Studio 2017/Projects/TankBattle/TankBattle/Content/CastleTurretTextureForShow.png</File>
+  </SourceFiles>
+</SourceFileCollection>
