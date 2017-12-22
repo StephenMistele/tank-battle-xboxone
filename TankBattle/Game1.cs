@@ -1,17 +1,73 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using Tank_Game;
 
 namespace TankBattle
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
- 
+
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        // Textures & Sprites
+        Texture2D TankTexture;
+        Texture2D BulletTexture;
+        Texture2D CastleBulletTexture;
+        Texture2D TurretTexture;
+        Texture2D CastleTurretTexture;
+        Texture2D CastleTurretTextureForShow;
+        Texture2D CastleTurretBaseTexture;
+        Texture2D dot;
+        SpriteFont Andy40, Andy20;
+
+        // Global Variables
+        int ScreenWidth = TileMap.TileWidth * TileMap.MapWidth;
+        int ScreenHeight = TileMap.TileHeight * TileMap.MapHeight;
+        public static Random rand = new Random();
+        public static Block block;
+        public Sprite Tank;
+        public Sprite Bullet;
+        public Sprite CastleBullet;
+        public Sprite Turret;
+        public Sprite CastleTurret;
+        public Sprite CastleTurretBase;
+        public float tankSpeed = 900f;
+        public bool fisttime = true;
+        public float bulletSpeed = 1200f;
+        public float castleBulletSpeed = 500f;
+        public float castleBulletY = 1;
+        public static Random rando = new Random();
+        public float tankLoc = 0f;
+        public int specialCounter = 0;
+        public static bool forceField = true;
+        public bool dead = false;
+        public float lives = 50f;
+        public int score = 0;
+        public bool won = false;
+        public static int turretHealth = 50;
+        public static bool specialHit = false;
+        public static float castleShootMod = 0f;
+        public static int round = 1;
+
+        // Timers
+        float keyPressSpeed = .1f;
+        float keyPressTimer = 0.0f;
+        float CastleShootSpeed = 4.5f;
+        float CastleShootTimer = 0.0f;
+        float ForceFieldVibSpeed = .5f;
+        float ForceFieldVibTimer = 0.0f;
+        float gameOverSpeed = 3f;
+        float gameOverTimer = 0.0f;
+        float specialTimerHitLength = 5f;
+        float specialHitTimer = 0.0f;
+        float forceFeildTimerEndFlashLength = 1.2f;
+        float forceFeildTimerEndTimer = 0.0f;
+        float roundOverSpeed = 3f;
+        float roundOverTimer = 0.0f;
+
 
         public Game1()
         {
@@ -19,29 +75,20 @@ namespace TankBattle
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            this.graphics.PreferredBackBufferWidth = ScreenWidth;
+            this.graphics.PreferredBackBufferHeight = ScreenHeight;
+            this.graphics.ApplyChanges();
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            Texture2D TileTexture;
+            int x = rand.Next(-2, 3);
 
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
