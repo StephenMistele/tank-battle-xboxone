@@ -1,1 +1,6 @@
 .vs/
+TankBattle/bin/
+TankBattle/obj/
+TankBattle/obj/*
+TankBattle/Content/bin/
+TankBattle/Content/obj/

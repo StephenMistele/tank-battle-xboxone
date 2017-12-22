@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace TankBattle
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
+ 
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
