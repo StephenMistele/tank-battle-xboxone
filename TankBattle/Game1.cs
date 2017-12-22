@@ -89,6 +89,45 @@ namespace TankBattle
             Texture2D TileTexture;
             int x = rand.Next(-2, 3);
 
+            // Load Fonts
+            Andy20 = Content.Load<SpriteFont>(@"Andy20");
+            Andy40 = Content.Load<SpriteFont>(@"Andy40");
+
+            // Load Textures
+            TankTexture = Content.Load<Texture2D>(@"TankTexture");
+            BulletTexture = Content.Load<Texture2D>(@"BulletTexture");
+            CastleBulletTexture = Content.Load<Texture2D>(@"BulletTexture");
+            TurretTexture = Content.Load<Texture2D>(@"Turret Texture");
+            CastleTurretTexture = Content.Load<Texture2D>(@"CastleTurretTexture");
+            CastleTurretTextureForShow = Content.Load<Texture2D>(@"CastleTurretTextureForShow");
+            CastleTurretBaseTexture = Content.Load<Texture2D>(@"CastleTurretBaseTexture");
+            dot = Content.Load<Texture2D>(@"Dot");
+
+
+            // Set Camera Properties
+            Camera.WorldRectangle = new Rectangle(0, 0, ScreenWidth, ScreenHeight);
+            Camera.ViewPortWidth = ScreenWidth;
+            Camera.ViewPortHeight = ScreenHeight;
+
+            // Load TileMap
+            TileTexture = Content.Load<Texture2D>(@"TileTexture");
+            Tank = new Sprite(new Vector2(20, ScreenHeight - TileMap.TileHeight * 4), TankTexture, new Rectangle(0, 0, 64, 32), Vector2.Zero);
+
+            Bullet = new Sprite(new Vector2(0, 0), BulletTexture, new Rectangle(0, 0, 10, 10), Vector2.Zero);
+            Bullet.Expired = true;
+
+            CastleBullet = new Sprite(new Vector2(800, 800), CastleBulletTexture, new Rectangle(0, 0, 10, 10), Vector2.Zero);
+            CastleBullet.Expired = true;
+
+            Turret = new Sprite(new Vector2(13, ScreenHeight - TileMap.TileHeight * 4 + 2), TurretTexture, new Rectangle(0, 0, 71, 43), Vector2.Zero);
+            //CastleTurret = new Sprite(new Vector2(425, 155), CastleTurretTextureF, new Rectangle(0, 0, 71, 43), Vector2.Zero);
+            CastleTurret = new Sprite(new Vector2(465, 170), CastleTurretTextureForShow, new Rectangle(0, 0, 24, 2), Vector2.Zero);
+            CastleTurretBase = new Sprite(new Vector2(501, 156), CastleTurretBaseTexture, new Rectangle(0, 0, 36, 23), Vector2.Zero);
+            CastleTurret.WorldLocation = new Vector2(CastleTurret.WorldLocation.X + 24, CastleTurret.WorldLocation.Y - 14);
+
+
+            TileMap.Initialize(TileTexture);
+            Drawing.Initialize(dot);
         }
 
         /// <summary>
