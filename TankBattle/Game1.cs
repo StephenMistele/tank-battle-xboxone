@@ -130,23 +130,287 @@ namespace TankBattle
             Drawing.Initialize(dot);
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        #region Procedures
+        private void handleInput(KeyboardState keyState)
+        {
+            if (dead == false)
+            {
+                if (keyState.IsKeyDown(Keys.Escape))
+                    this.Exit();
+
+                if ((keyState.IsKeyDown(Keys.Space)) && (Bullet.Expired == true))
+                {
+                    Bullet.WorldLocation = new Vector2(Tank.WorldLocation.X + 32, Tank.WorldLocation.Y + 12);
+                    Bullet.Velocity = new Vector2((float)Math.Cos(Turret.Rotation - .5f), (float)Math.Sin(Turret.Rotation - .5f)) * bulletSpeed;
+                    Bullet.Expired = false;
+                }
+
+                if ((keyState.IsKeyDown(Keys.Left)) && (keyPressTimer > keyPressSpeed) && (Tank.WorldLocation.X >= 22))
+                {
+                    Tank.Velocity = new Vector2(-1, 0) * tankSpeed;
+                    Turret.Velocity = new Vector2(-1, 0) * tankSpeed;
+                    keyPressTimer = 0f;
+                }
+                else if ((keyState.IsKeyDown(Keys.Right)) && (keyPressTimer > keyPressSpeed) && (Tank.WorldLocation.X <= TileMap.MapWidth + 200))
+                {
+                    Tank.Velocity = new Vector2(1, 0) * tankSpeed;
+                    Turret.Velocity = new Vector2(1, 0) * tankSpeed;
+                    keyPressTimer = 0f;
+                }
+                else if ((keyState.IsKeyDown(Keys.Up)) && (keyPressTimer > keyPressSpeed) && (Turret.Rotation >= -1f))
+                {
+                    Turret.Rotation = Turret.Rotation - 0.1f;
+                    keyPressTimer = 0f;
+                }
+                else if ((keyState.IsKeyDown(Keys.Down)) && (keyPressTimer > keyPressSpeed) && (Turret.Rotation <= .5))
+                {
+                    Turret.Rotation = Turret.Rotation + 0.1f;
+                    keyPressTimer = 0f;
+                }
+                else
+                {
+                    Tank.Velocity = new Vector2(0, 0) * tankSpeed;
+                    Turret.Velocity = new Vector2(0, 0) * tankSpeed;
+                }
+            }
+        }
+
+        private void handleAngleInput(KeyboardState keyState)
+        {
+            if (dead == false)
+            {
+                if ((keyState.IsKeyDown(Keys.Up)) && (keyPressTimer > keyPressSpeed) && (Turret.Rotation >= -1f))
+                {
+                    Turret.Rotation = Turret.Rotation - 0.1f;
+                    keyPressTimer = 0f;
+                }
+                else if ((keyState.IsKeyDown(Keys.Down)) && (keyPressTimer > keyPressSpeed) && (Turret.Rotation <= .5))
+                {
+                    Turret.Rotation = Turret.Rotation + 0.1f;
+                    keyPressTimer = 0f;
+                }
+            }
+        }
+
+
+
+        Vector2 NewBulletVelocity(Vector2 oldVelo)
+        {
+            Vector2 newVelo = oldVelo;
+
+            if (oldVelo.Y <= -70)
+            {
+                newVelo.Y = oldVelo.Y * 0.93f;
+            }
+            else
+            {
+                newVelo.Y = Math.Abs(oldVelo.Y * 1.1f);
+            }
+            return newVelo;
+        }
+
+
+        #endregion
+
         protected override void Update(GameTime gameTime)
         {
-            // TODO: Add your update logic here
+            // Update Timers
+            keyPressTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            CastleShootTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (dead == true)
+                gameOverTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Handle Input
+            if (won == false && dead == false)
+            {
+                handleInput(Keyboard.GetState());
+                handleAngleInput(Keyboard.GetState());
+            }
+
+            // Update Bullet
+            if (Bullet.WorldLocation.Y <= TileMap.TileHeight ||
+                Bullet.WorldLocation.Y >= ScreenHeight - 2 * TileMap.TileHeight ||
+                Bullet.WorldLocation.X >= ScreenWidth - TileMap.TileHeight)
+            {
+                Bullet.Velocity = new Vector2(0, 0);
+                Bullet.Expired = true;
+            }
+
+            if (!Bullet.Expired)
+                Bullet.Velocity = NewBulletVelocity(Bullet.Velocity);
+
+
+            // Update And Shoot Castle Bullet
+            if ((CastleShootTimer > CastleShootSpeed) && (won == false))
+            {
+                //float x = rand.Next(-15, 20);
+                float x = rand.Next(0, 0);
+                CastleBullet.WorldLocation = new Vector2(CastleTurret.WorldLocation.X + 60, CastleTurret.WorldLocation.Y + 8);
+                tankLoc = Tank.WorldLocation.X / 500 - .1f;
+                if (Tank.WorldLocation.X > 100 && Tank.WorldLocation.X < 170)
+                    CastleBullet.Velocity = new Vector2((float)Math.Cos(3.55f + tankLoc + (x / 100)), (float)Math.Sin(-.5f)) * castleBulletSpeed * 1.1f;
+                else if (Tank.WorldLocation.X >= 0 && Tank.WorldLocation.X <= 100)
+                    CastleBullet.Velocity = new Vector2((float)Math.Cos(3.55f + tankLoc + (x / 100)), (float)Math.Sin(-.5f)) * castleBulletSpeed * 1.2f;
+                else if (Tank.WorldLocation.X >= 170)
+                    CastleBullet.Velocity = new Vector2((float)Math.Cos(3.55f + tankLoc + (x / 100)), (float)Math.Sin(-.5f)) * castleBulletSpeed;
+                CastleTurret.Rotation = (float)(Math.Tan((CastleBullet.Velocity.Y) / (CastleBullet.Velocity.X)));
+                CastleShootTimer = 0f;
+                CastleBullet.Expired = false;
+            }
+
+            if (CastleBullet.WorldLocation.Y <= TileMap.TileHeight ||
+                CastleBullet.WorldLocation.Y >= ScreenHeight - 2 * TileMap.TileHeight ||
+                CastleBullet.WorldLocation.X <= TileMap.TileWidth)
+            {
+                CastleBullet.Velocity = new Vector2(0, 0);
+                CastleBullet.Expired = true;
+            }
+
+            if (!CastleBullet.Expired)
+                CastleBullet.Velocity = NewBulletVelocity(CastleBullet.Velocity);
+
+
+            // Check for Bullet Colliding w/Castle
+            Vector2 mapSq = new Vector2(TileMap.GetSquareByPixelX((int)Bullet.WorldCenter.X), TileMap.GetSquareByPixelY((int)Bullet.WorldCenter.Y));
+
+            if (TileMap.mapSquare[(int)mapSq.X, (int)mapSq.Y].tileType == TileMap.TileType.Castle)
+            {
+                TileMap.mapSquare[(int)mapSq.X, (int)mapSq.Y].tileType = TileMap.TileType.Empty;
+                Bullet.Velocity = new Vector2(0, 0);
+                Bullet.Expired = true;
+            }
+            else if (TileMap.mapSquare[(int)mapSq.X, (int)mapSq.Y].tileType == TileMap.TileType.Border)
+            {
+                Bullet.Velocity = new Vector2(0, 0);
+                Bullet.Expired = true;
+            }
+
+            // Check for Bullet Colliding w/Special
+            if (TileMap.mapSquare[(int)mapSq.X, (int)mapSq.Y].tileType == TileMap.TileType.Special)
+            {
+                TileMap.mapSquare[(int)mapSq.X, (int)mapSq.Y].tileType = TileMap.TileType.Empty;
+                Bullet.Velocity = new Vector2(0, 0);
+                if (Bullet.Expired == false)
+                {
+                    specialCounter++;
+                    specialHit = true;
+                }
+                Bullet.Expired = true;
+            }
+
+            // Check for Bullet Colliding w/Grass
+
+            if (TileMap.mapSquare[(int)mapSq.X, (int)mapSq.Y].tileType == TileMap.TileType.Grass)
+            {
+                Bullet.Velocity = new Vector2(0, 0);
+                Bullet.Expired = true;
+            }
+            // Check for Castle Bullet Colliding w/Tank
+            if (CastleBullet.IsBoxColliding(Tank.BoundingBoxRect))
+            {
+                lives = lives - 10f;
+                CastleBullet.Velocity = new Vector2(0, 0);
+                CastleBullet.Expired = true;
+                if (lives <= 0)
+                {
+                    score = Math.Abs(50 - turretHealth);
+                    dead = true;
+                }
+            }
+
+            // Check for Bullet Colliding w/Castle Turret
+            if ((Bullet.IsBoxColliding(CastleTurretBase.BoundingBoxRect)) && (specialHit == true))
+            {
+                turretHealth = turretHealth - 2;
+                Bullet.Velocity = new Vector2(0, 0);
+                Bullet.Expired = true;
+            }
+
+            //Timer for "Weakness" Window
+            if (specialHit == true)
+            {
+                specialHitTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (specialHitTimer > specialTimerHitLength)
+                    specialHit = false;
+                forceField = false;
+            }
+            else
+            {
+                forceField = true;
+                specialHitTimer = 0;
+            }
+
+            //Check if Won
+            if (turretHealth <= 0)
+            {
+                dead = false;
+                won = true;
+                roundOverTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (roundOverTimer > roundOverSpeed)
+                {
+                    turretHealth = 100 + round * 8;
+                    lives = 50;
+                    specialCounter = 0;
+                    Tank.WorldLocation = new Vector2(20, ScreenHeight - TileMap.TileHeight * 4);
+                    Turret.WorldLocation = new Vector2(13, ScreenHeight - TileMap.TileHeight * 4 + 2);
+                    won = false;
+                    round++;
+                    roundOverTimer = 0f;
+                    TileMap.InitializeTileMap();
+                    CastleShootSpeed = 4.5f * (.8f - round / 10);
+                }
+
+            }
+
+            // Check for All Specials Hit
+            if (specialCounter >= 5)
+            {
+                forceField = false;
+                CastleShootSpeed = 1.9f;
+                specialHit = true;
+            }
+
+            //End Game
+            if (gameOverTimer > gameOverSpeed)
+                this.Exit();
+
+            if (forceField == false)
+            {
+                TileMap.mapSquare[30, 10].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[34, 10].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[30, 9].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[34, 9].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[30, 8].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[34, 8].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[31, 8].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[33, 8].tileType = TileMap.TileType.Empty;
+                TileMap.mapSquare[32, 8].tileType = TileMap.TileType.Empty;
+            }
+            else
+            {
+                TileMap.mapSquare[30, 10].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[34, 10].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[30, 9].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[34, 9].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[30, 8].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[34, 8].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[31, 8].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[33, 8].tileType = TileMap.TileType.forceField;
+                TileMap.mapSquare[32, 8].tileType = TileMap.TileType.forceField;
+            }
+
+            // Check for Castle Missing Row
+
+
+            // Update Sprites
+            Tank.Update(gameTime);
+            Turret.Update(gameTime);
+            Bullet.Update(gameTime);
+            CastleBullet.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -158,9 +422,47 @@ namespace TankBattle
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
 
-            // TODO: Add your drawing code here
+            // Draw gameboard
+            TileMap.Draw(spriteBatch);
+            Tank.Draw(spriteBatch);
+            Turret.Draw(spriteBatch);
+            Bullet.Draw(spriteBatch);
+            CastleTurret.Draw(spriteBatch);
+            CastleTurretBase.Draw(spriteBatch);
+            CastleBullet.Draw(spriteBatch);
 
+            spriteBatch.DrawString(Andy40, won.ToString(), new Vector2(20, 60), Color.White);
+            spriteBatch.DrawString(Andy40, tankLoc.ToString(), new Vector2(20, 100), Color.White);
+            spriteBatch.DrawString(Andy40, specialCounter.ToString(), new Vector2(20, 140), Color.White);
+            spriteBatch.DrawString(Andy40, lives.ToString(), new Vector2(20, 180), Color.White);
+            spriteBatch.DrawString(Andy40, turretHealth.ToString(), new Vector2(20, 220), Color.White);
+
+            //Temp
+            Drawing.DrawBox(Tank.BoundingBoxRect, Color.Yellow, spriteBatch);
+            Drawing.DrawBox(CastleTurretBase.BoundingBoxRect, Color.Yellow, spriteBatch);
+
+            //game over
+            if (dead == true)
+                spriteBatch.DrawString(Andy20, "Game over. You did " + score.ToString() + " % Damage to the Enemy", new Vector2(200, 70), Color.White);
+
+            //Next round
+            if (won == true)
+                spriteBatch.DrawString(Andy20, "Good Job! You killed the Enemy. Prepare for The next Round", new Vector2(160, 70), Color.White);
+
+            //Draw Turret Health Bar
+            Drawing.DrawBox(new Rectangle((492), 120, 50, 3), Color.Red, spriteBatch);
+            for (int i = 0; i < turretHealth; i++)
+                Drawing.DrawVLine((492 + i), (120), (123), Color.Red, spriteBatch);
+
+            //Draw Tank Health Bar
+            Drawing.DrawBox(new Rectangle(((int)Tank.WorldLocation.X), 330, 50, 3), Color.Red, spriteBatch);
+            for (int i = 0; i < lives; i++)
+                Drawing.DrawVLine(((int)Tank.WorldLocation.X + i), (330), (333), Color.Red, spriteBatch);
+
+
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
