@@ -12,7 +12,7 @@ namespace TankBattle
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        // Textures & Sprites
+        // Textures & Sprities
         Texture2D TankTexture;
         Texture2D BulletTexture;
         Texture2D CastleBulletTexture;
