@@ -227,7 +227,7 @@ namespace TankBattle
 
         protected override void Update(GameTime gameTime)
         {
-            // Update Timers
+            // Update Timer
             keyPressTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             CastleShootTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (dead == true)
