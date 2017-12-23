@@ -103,8 +103,13 @@ namespace TankBattle
             // parameter
             rootFrame.Navigate(typeof(GamePage), e.Arguments);
         }
-        // Ensure the current window is active
-        Window.Current.Activate();
+
+            ApplicationView.PreferredLaunchViewSize = new Size(1920, 1080);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
+
+            // Ensure the current window is active
+            Window.Current.Activate();
     }
 
     /// <summary>

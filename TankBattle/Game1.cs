@@ -23,9 +23,13 @@ namespace TankBattle
         Texture2D dot;
         SpriteFont Andy40, Andy20;
 
-        // Global Variables
-        int ScreenWidth = TileMap.TileWidth * TileMap.MapWidth;
-        int ScreenHeight = TileMap.TileHeight * TileMap.MapHeight;
+        Texture2D backgroundtexture;
+
+        int ScreenWidth = 1920;
+        int ScreenHeight = 1080;
+
+        Rectangle SafeArea;
+
         public static Random rand = new Random();
         public static Block block;
         public Sprite Tank;
@@ -80,6 +84,9 @@ namespace TankBattle
             this.graphics.PreferredBackBufferWidth = ScreenWidth;
             this.graphics.PreferredBackBufferHeight = ScreenHeight;
             this.graphics.ApplyChanges();
+
+            SafeArea = Window.ClientBounds;
+
             base.Initialize();
         }
 
@@ -102,6 +109,8 @@ namespace TankBattle
             CastleTurretTextureForShow = Content.Load<Texture2D>(@"CastleTurretTextureForShow");
             CastleTurretBaseTexture = Content.Load<Texture2D>(@"CastleTurretBaseTexture");
             dot = Content.Load<Texture2D>(@"Dot");
+
+            backgroundtexture = Content.Load<Texture2D>("backgroundtexture");
 
 
             // Set Camera Properties
@@ -415,14 +424,17 @@ namespace TankBattle
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+
+            //*******************************************************************************************************************************************************************************
+            // More about the safe area of the screen and stuff: https://developer.xamarin.com/guides/cross-platform/game_development/monogame/platforms/uwp/#Safe_Area_on_Xbox_One
+            //*******************************************************************************************************************************************************************************
+
+            //Draw the stupid background that I made
+            spriteBatch.Draw(backgroundtexture, new Rectangle(0, 0, ScreenWidth, ScreenHeight), Color.White);            
 
             // Draw gameboard
             TileMap.Draw(spriteBatch);
@@ -461,6 +473,9 @@ namespace TankBattle
             for (int i = 0; i < lives; i++)
                 Drawing.DrawVLine(((int)Tank.WorldLocation.X + i), (330), (333), Color.Red, spriteBatch);
 
+
+            //Draw a box for the safe area of the screen to put ALL important things in
+            Drawing.DrawBox(new Rectangle((1920 - SafeArea.Width)/2, (1080 - SafeArea.Height)/2, SafeArea.Width, SafeArea.Height), Color.Red, spriteBatch);
 
             spriteBatch.End();
             base.Draw(gameTime);
